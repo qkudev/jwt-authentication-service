@@ -39,4 +39,4 @@ lerna-debug.log*
 
 # Docker
 docker-compose*.local.yml
-storage
+/storage

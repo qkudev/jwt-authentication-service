@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { IncomingMessage, OutgoingMessage } from 'http';
 import { AuthorizationMiddleware } from '../index';
 import { app as config } from '../../config';
 
@@ -6,15 +6,15 @@ const authorizedRequest = {
   headers: {
     authorization: `Bearer ${config.apiKey}`,
   },
-} as Request;
+} as IncomingMessage;
 
 const unauthorizedRequest = {
   headers: { authorization: undefined },
-} as Request;
+} as IncomingMessage;
 
 const tokenRequest = {
   headers: { authorization: `TOKEN ${config.apiKey}` },
-} as Request;
+} as IncomingMessage;
 
 const wrongBearerRequest = {
   headers: {
@@ -23,9 +23,9 @@ const wrongBearerRequest = {
       .reverse()
       .join('')}`,
   },
-} as Request;
+} as IncomingMessage;
 
-const res = {} as Response;
+const res = {} as OutgoingMessage;
 
 describe('AuthorizationMiddleware', () => {
   const middleware = new AuthorizationMiddleware();
