@@ -4,6 +4,7 @@
   "description": "Dead-simple JSON Web Token authentication service",
   "homepage": "https://github.com/qkudev/jwt-authentication-service",
   "private": false,
+  "main": "src/main.ts",
   "repository": {
     "url": "https://github.com/qkudev/jwt-authentication-service",
     "type": "git"

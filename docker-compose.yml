@@ -1,0 +1,27 @@
+version: '2.3'
+
+services:
+  auth:
+    image: qkudev/jwt-authentication-service
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - 5000:5000
+    volumes:
+      - ./:/usr/src/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    links:
+      - redis
+    tty: true
+
+  redis:
+    image: redis:5.0.5-alpine
+    volumes:
+      - ./storage/redis:/data
+    ports:
+      - "6379"

@@ -1,0 +1,25 @@
+version: '2.3'
+
+services:
+  auth:
+    image: jwt-authentication-service
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - 5000:5000
+    env_file:
+      - .env.production
+    depends_on:
+      - redis
+    links:
+      - redis
+    tty: true
+
+  redis:
+    image: redis:5.0.5-alpine
+    volumes:
+      - ./storage/redis:/data
+    ports:
+      - "6379"
