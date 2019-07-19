@@ -1,18 +1,17 @@
 import { Inject, Injectable, Provider } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import appConfig from 'config';
-import { StorageService } from 'storage/service';
-import { IdentityService } from 'identity/service';
 
+import { jwt as config } from '../config';
+import { IdentityService } from '../identity/service';
 import {
+  BadTokenException,
   BlacklistedTokenException,
   DifferentIdentitiesException,
   TokenExpiredException,
 } from './errors';
+import { StorageServiceType, StorageService } from '../storage/service';
 
 const uuid4 = require('uuid/v4');
-
-const { jwt: config } = appConfig;
 
 @Injectable()
 export class TokenService {
@@ -31,8 +30,8 @@ export class TokenService {
   };
 
   constructor(
-    @Inject(StorageService.Type)
-    private readonly storage: StorageService,
+    @Inject(StorageServiceType)
+    private readonly redis: StorageService,
     @Inject(IdentityService.Type)
     private readonly identityService: IdentityService,
   ) {
@@ -73,27 +72,27 @@ export class TokenService {
     signedToken: string,
     tokenType: TokenType,
   ): Promise<Token<typeof tokenType>> {
-    try {
-      const secret =
-        tokenType === 'ACCESS'
-          ? this.accessTokenOptions.secret
-          : this.refreshOptions.secret;
+    let token: Token<typeof tokenType>;
+    const secret =
+      tokenType === 'ACCESS'
+        ? this.accessTokenOptions.secret
+        : this.refreshOptions.secret;
 
-      const token = (await jwt.verify(signedToken, secret)) as Token<
+    try {
+      token = (await jwt.verify(signedToken, secret)) as Token<
         typeof tokenType
       >;
-      if (await this.isBlacklisted(token.id)) {
-        throw new BlacklistedTokenException();
-      }
-
-      return token;
     } catch (e) {
       if (e.name === 'TokenExpiredError') {
         throw new TokenExpiredException();
       } else {
-        throw e;
+        throw new BadTokenException();
       }
     }
+    if (await this.isBlacklisted(token.id)) {
+      throw new BlacklistedTokenException();
+    }
+    return token;
   }
 
   async refresh(signedRefreshToken: string): Promise<SignedTokenPair> {
@@ -108,19 +107,16 @@ export class TokenService {
       await this.identityService.removeRefreshToken(identityId, tokenId);
     }
 
-    return new Promise((resolve, reject) => {
-      this.storage.client.set(
-        `blacklist-${tokenId}`,
-        'true',
-        'EX',
-        1000 * 3600 * 24 * 7,
-        err => (err ? reject(err) : resolve()),
-      );
-    });
+    await this.redis.set(
+      `blacklist-${tokenId}`,
+      'true',
+      'EX',
+      1000 * 3600 * 24 * 7,
+    );
   }
 
   async isBlacklisted(tokenId: string): Promise<boolean> {
-    return !!(await this.storage.get(`blacklist-${tokenId}`));
+    return !!(await this.redis.get(`blacklist-${tokenId}`));
   }
 
   async generateTokenPair(identityId: string): Promise<SignedTokenPair> {

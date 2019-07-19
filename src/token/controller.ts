@@ -1,7 +1,7 @@
 import { Body, Controller, Inject, Post } from '@nestjs/common';
-import { IdentityService } from 'identity/service';
-import { SuccessResponse } from 'utils';
 
+import { IdentityService } from '../identity/service';
+import { SuccessResponse } from '../utils';
 import * as DTO from './dto';
 import { TokenService } from './service';
 

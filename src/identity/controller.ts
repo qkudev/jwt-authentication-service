@@ -7,7 +7,7 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
-import { SuccessResponse } from 'utils';
+import { SuccessResponse } from '../utils';
 
 import { IdentityService } from './service';
 import * as DTO from './dto';

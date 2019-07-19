@@ -1,39 +1,16 @@
-import { Injectable, Provider } from '@nestjs/common';
-import * as redis from 'redis';
+import { Provider } from '@nestjs/common';
+import { Redis } from 'ioredis';
 
-@Injectable()
-export class StorageService {
-  public static readonly Type = Symbol('StorageService');
-  public readonly client: redis.RedisClient;
+import { app } from '../config';
 
-  constructor() {
-    this.client = redis.createClient(6379);
-  }
+const IORedis = require('ioredis');
+const IORedisMock = require('ioredis-mock');
 
-  get(key: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.client.get(key, (err, res) => (err ? reject(err) : resolve(res)));
-    });
-  }
+export type StorageService = Redis;
 
-  set(key: string, value: string): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.client.set(key, value, (err, res) =>
-        err ? reject(err) : resolve(res),
-      );
-    });
-  }
-
-  del(key: string) {
-    return new Promise((resolve, reject) => {
-      this.client.del(key, (err, reply) =>
-        err ? reject(err) : resolve(reply),
-      );
-    });
-  }
-}
+export const StorageServiceType = Symbol('StorageService');
 
 export const StorageServiceProvider: Provider = {
-  provide: StorageService.Type,
-  useClass: StorageService,
+  provide: StorageServiceType,
+  useClass: app.nodeEnv === 'test' ? IORedisMock : IORedis,
 };

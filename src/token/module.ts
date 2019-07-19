@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { StorageModule } from 'storage/module';
-import { IdentityModule } from 'identity/module';
 
+import { StorageModule } from '../storage/module';
+import { IdentityModule } from '../identity/module';
 import { TokenServiceProvider } from './service';
 
 @Module({

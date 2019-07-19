@@ -1,7 +1,7 @@
 import { Inject, Injectable, Provider } from '@nestjs/common';
-import { StorageService } from 'storage/service';
 
 import { IdentityNotFound } from './errors';
+import { StorageServiceType, StorageService } from '../storage/service';
 
 const uuid4 = require('uuid/v4');
 
@@ -10,8 +10,8 @@ export class IdentityService {
   public static readonly Type = Symbol('IdentityService');
 
   constructor(
-    @Inject(StorageService.Type)
-    private readonly storage: StorageService,
+    @Inject(StorageServiceType)
+    private readonly redis: StorageService,
   ) {}
 
   async create(data: any = null): Promise<Identity> {
@@ -25,7 +25,7 @@ export class IdentityService {
       createdAt: ts,
       updatedAt: ts,
     };
-    await this.storage.set(`identity-${identityId}`, JSON.stringify(identity));
+    await this.redis.set(`identity-${identityId}`, JSON.stringify(identity));
 
     return identity;
   }
@@ -38,7 +38,7 @@ export class IdentityService {
 
     identity.refreshTokens = [tokenId, ...identity.refreshTokens];
     identity.updatedAt = new Date();
-    await this.storage.set(`identity-${identityId}`, JSON.stringify(identity));
+    await this.redis.set(`identity-${identityId}`, JSON.stringify(identity));
 
     return identity;
   }
@@ -53,43 +53,35 @@ export class IdentityService {
       id => id !== tokenId,
     );
     identity.updatedAt = new Date();
-    await this.storage.set(`identity-${identityId}`, JSON.stringify(identity));
+    await this.redis.set(`identity-${identityId}`, JSON.stringify(identity));
 
     return identity;
   }
 
   async findById(identityId: string): Promise<Identity> {
-    try {
-      const identityStr = await this.storage.get(`identity-${identityId}`);
-
-      return JSON.parse(identityStr) as Identity;
-    } catch (e) {
+    const identityStr = await this.redis.get(`identity-${identityId}`);
+    if (!identityStr) {
       throw new IdentityNotFound();
     }
+
+    return JSON.parse(identityStr) as Identity;
   }
 
   async updateDataById(
     identityId: string,
     data: any = null,
   ): Promise<Identity> {
-    try {
-      const identity = await this.findById(identityId);
+    const identity = await this.findById(identityId);
 
-      identity.data = data;
-      identity.updatedAt = new Date();
-      await this.storage.set(
-        `identity-${identity.id}`,
-        JSON.stringify(identity),
-      );
+    identity.data = data;
+    identity.updatedAt = new Date();
+    await this.redis.set(`identity-${identity.id}`, JSON.stringify(identity));
 
-      return identity;
-    } catch (e) {
-      throw new IdentityNotFound();
-    }
+    return identity;
   }
 
   async deleteById(identityId: string): Promise<void> {
-    await this.storage.del(`identity-${identityId}`);
+    await this.redis.del(`identity-${identityId}`);
   }
 }
 

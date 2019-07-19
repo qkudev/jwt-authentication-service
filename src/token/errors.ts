@@ -42,3 +42,17 @@ export class DifferentIdentitiesException extends HttpException {
     );
   }
 }
+
+export class BadTokenException extends HttpException {
+  constructor() {
+    super(
+      {
+        success: false,
+        error: 'BadTokenError',
+        message: 'Bad token string',
+        statusCode: HttpStatus.BAD_REQUEST,
+      },
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+}
