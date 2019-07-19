@@ -1,0 +1,457 @@
+FORMAT: 1A
+HOST: http://polls.apiblueprint.org/
+
+# JSON Web Token Authentication Service
+
+JSON API documentation for the [JWT Authentication Service](https://github.com/qkudev/jwt-authentication-service).
+
+
+#Group Identity
+
+## Identity Collection [/identity]
+
+### Create new Identity [POST]
+
++ Request
+
+    + Attributes (object)
+        + data (object, optional)
+        Any data to save with identity
+
+    + Body
+
+            {
+                "data": {
+                    "userId": "8e45161d-7320-450e-b7e8-de4d47cc923c"
+                }
+            }
+
+
++ Response 201 (application/json)
+
+    + Attributes (object)
+        + success: true (boolean, required)
+        + data (Identity, required)
+
+    + Body
+
+            {
+                "success": true,
+                "data": {
+                    "id": "8e45161d-7320-450e-b7e8-de4d47cc923c",
+                    "refreshTokens": [],
+                    "data": {
+                        "userId": "8e45161d-7320-450e-b7e8-de4d47cc923c"
+                    },
+                    "createdAt": "2019-07-19T15:32:57.909Z",
+                    "updatedAt": "2019-07-19T15:32:57.909Z"
+                }
+            }
+
+
+## Identities by ID [/identity/{id}]
+
++ Parameters
+
+    + id: 8e45161d-7320-450e-b7e8-de4d47cc923c (string, required)
+
+
+### Get Identity data [GET]
+
++ Response 200 (application/json)
+
+    + Attributes
+        + success: true (boolean, required)
+        + data (Identity, required)
+
+    + Body
+
+            {
+                "success": true,
+                "data": {
+                    "id": "8e45161d-7320-450e-b7e8-de4d47cc923c",
+                    "refreshTokens": [],
+                    "data": {
+                        "userId": "8e45161d-7320-450e-b7e8-de4d47cc923c"
+                    },
+                    "createdAt": "2019-07-19T15:32:57.909Z",
+                    "updatedAt": "2019-07-19T15:32:57.909Z"
+                }
+            }
+
++ Response 401 (application/json)
+
+    + Attributes (Error Response)
+
+    + Body
+
+            {
+                "success": false,
+                "error": "Unauthorized",
+                "message": "Unauthorized error",
+                "statusCode": 401
+            }
+
++ Response 404 (application/json)
+
+    + Attributes (Error Response)
+
+    + Body
+        
+            {
+                "success": false,
+                "error": "IdentityNotFound",
+                "message": "Identity not found",
+                "statusCode": 404
+            }
+
+
+### Update Identity data [POST]
+
++ Response 201 (application/json)
+
+    + Attributes
+        + success: true (boolean, required)
+        + data (Identity, required)
+
+    + Body
+
+            {
+                "success": true,
+                "data": {
+                    "id": "8e45161d-7320-450e-b7e8-de4d47cc923c",
+                    "refreshTokens": [],
+                    "data": {
+                        "userId": "8e45161d-7320-450e-b7e8-de4d47cc923c"
+                    },
+                    "createdAt": "2019-07-19T15:32:57.909Z",
+                    "updatedAt": "2019-07-19T15:32:57.909Z"
+                }
+            }
+
+
++ Response 401 (application/json)
+
+    + Attributes (Error Response)
+
+    + Body
+
+            {
+                "success": false,
+                "error": "Unauthorized",
+                "message": "Unauthorized error",
+                "statusCode": 401
+            }
+
++ Response 404 (application/json)
+
+    + Attributes (Error Response)
+
+    + Body
+        
+            {
+                "success": false,
+                "error": "IdentityNotFound",
+                "message": "Identity not found",
+                "statusCode": 404
+            }
+
+
+### Delete Identity [DELETE]
+
++ Response 204 (application/json)
+
++ Response 401 (application/json)
+
+    + Attributes (Error Response)
+
+    + Body
+
+            {
+                "success": false,
+                "error": "Unauthorized",
+                "message": "Unauthorized error",
+                "statusCode": 401
+            }
+
++ Response 404 (application/json)
+
+    + Attributes (Error Response)
+
+    + Body
+        
+            {
+                "success": false,
+                "error": "IdentityNotFound",
+                "message": "Identity not found",
+                "statusCode": 404
+            }
+
+
+# Group Token
+
+## Token Generation [/token]
+
+### Generate token pair [POST]
+
++ Request
+
+    + Attributes (object)
+        + identity: 8e45161d-7320-450e-b7e8-de4d47cc923c (string, required)
+
+    + Body
+    
+            {
+                "identity": "8e45161d-7320-450e-b7e8-de4d47cc923c"
+            }
+
++ Response 201 (application/json)
+
+    + Attributes (object)
+        + success: true (boolean, required)
+        + data (Token Pair, required)
+
+    + Body
+    
+            {
+                "success": true,
+                "data": {
+                    "access": SignedToken,
+                    "refresh": SignedToken
+                }
+            }
+
++ Response 400 (application/json)
+
+    + Attributes (Error Response)
+
+    + Body
+
+            {
+                "success": false,
+                "error": "BadRequestError",
+                "message": "Bad Request error",
+                "statusCode": 400
+            }
+
+
++ Response 401 (application/json)
+
+    + Attributes (Error Response)
+
+    + Body
+
+            {
+                "success": false,
+                "error": "Unauthorized",
+                "message": "Unauthorized error",
+                "statusCode": 401
+            }
+
++ Response 404 (application/json)
+
+    + Attributes (Error Response)
+
+    + Body
+
+            {
+                "success": false,
+                "error": "IdentityNotFound",
+                "message": "Identity not found error",
+                "statusCode": 401
+            }
+
+
+## Token verifying [/token/verify]
+
+### Verify access token [POST]
+
++ Request
+
+    + Attributes
+        + access_token (SignedToken, required)
+
+    + Body
+    
+            {
+                "access_token": SignedToken
+            }
+
+
++ Response 201 (application/json)
+
+    + Attributes (object)
+        + success: true (boolean, required)
+        + data (Identity, required)
+
+    + Body
+    
+            {
+                "success": true,
+                "data": {
+                    "id": "8e45161d-7320-450e-b7e8-de4d47cc923c",
+                    "refreshTokens": [],
+                    "data": {
+                        "userId": "8e45161d-7320-450e-b7e8-de4d47cc923c"
+                    },
+                    "createdAt": "2019-07-19T15:32:57.909Z",
+                    "updatedAt": "2019-07-19T15:32:57.909Z"
+                }
+            }
+
++ Response 400 (application/json)
+
+    + Attributes (Error Response)
+
+    + Body
+
+            {
+                "success": false,
+                "error": "BadTokenError",
+                "message": "Bad token string",
+                "statusCode": 400
+            }
+
+
++ Response 401 (application/json)
+
+    + Attributes (Error Response)
+
+    + Body
+
+            {
+                "success": false,
+                "error": "Unauthorized",
+                "message": "Unauthorized error",
+                "statusCode": 401
+            }
+
++ Response 419 (application/json)
+
+    + Attributes (Error Response)
+
+    + Body
+
+            {
+                "success": false,
+                "error": "TokenExpiredError",
+                "message": "Token has been expired",
+                "statusCode": 419
+            }
+
+
+
+## Token refreshing [/token/refresh]
+
+### Refresh token pair [POST]
+
++ Request
+
+    + Attributes (object)
+        + refresh_token (SignedToken, required)
+
+    + Body 
+    
+            {
+                "refresh_token": SignedToken
+            }
+
+
++ Response 201 (application/json)
+
+    + Attributes (object)
+        + success: true (boolean, required)
+        + data (Token Pair, required)
+
+    + Body
+    
+            {
+                "success": true,
+                "data": {
+                    "access": SignedToken,
+                    "refresh": SignedToken
+                }
+            }
+
+
+## Logout [/token/logout]
+
+### Logout token [POST]
+
++ Request
+
+    + Attributes (object)
+        + access_token (SignedToken, required)
+        + refresh_token (SignedToken, required)
+
+    + Body
+    
+            {
+                "access_token": "qwerty",
+                "refresh_token": "qwerty"
+            }
+
++ Response 201 (application/json)
+
+
++ Response 400 (application/json)
+
+    + Attributes (Error Response)
+
+    + Body
+
+            {
+                "success": false,
+                "error": "BadRequest",
+                "message": "Bad Request Error",
+                "statusCode": 400
+            }
+
+
++ Response 401 (application/json)
+
+    + Attributes (Error Response)
+
+    + Body
+
+            {
+                "success": false,
+                "error": "Unauthorized",
+                "message": "Unauthorized error",
+                "statusCode": 401
+            }
+
+
+
+# Data structures
+
+## Token Pair (object)
++ access (SignedToken, required)
++ refresh (SignedToken, required)
+
+## SignedToken (string)
+
+
+## Token (object)
++ id: 8e45161d-7320-450e-b7e8-de4d47cc923c (string, required)
++ type: ACCESS (string, required)
++ identity: 8e45161d-7320-450e-b7e8-de4d47cc923c (string, required)
++ createdAt: 2019-07-19T15:32:57.909Z (string, required)
+
+
+## Identity (object)
++ id: 8e45161d-7320-450e-b7e8-de4d47cc923c (string, required)
++ refreshTokens: [8e45161d-7320-450e-b7e8-de4d47cc923c] (array[string], required)
++ data (object, optional)
++ createdAt: 2019-07-19T15:32:57.909Z (string, required)
++ updatedAt: 2019-07-19T15:32:57.909Z (string, required)
+
+
+## Error Response (object)
++ success: false (boolean, required)
++ error (string, required)
++ message (string, required)
++ statusCode (number, required)
+
+
+
