@@ -71,4 +71,4 @@ e2e tests – `yarn test:e2e`.
 
 ## Licence
 
-License [MIT](https://github.com/qkudev/jwt-authentication-service/blob/master/LICENSE)
+License [MIT](https://github.com/qkudev/jwt-authentication-service/blob/master/LICENSE.md)
