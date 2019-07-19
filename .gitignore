@@ -38,5 +38,5 @@ lerna-debug.log*
 !.env.example
 
 # Docker
-docker-compose.local.yml
+docker-compose*.local.yml
 storage
