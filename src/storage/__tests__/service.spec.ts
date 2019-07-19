@@ -4,6 +4,7 @@ import {
   StorageService,
   StorageServiceProvider,
   StorageServiceType,
+  RedisStorage,
 } from '../service';
 
 describe('Storage::Service', () => {
@@ -20,5 +21,6 @@ describe('Storage::Service', () => {
 
   it('should be defined', async () => {
     expect(service).toBeDefined();
+    const storage = new RedisStorage();
   });
 });
