@@ -1,9 +1,25 @@
 {
-  "name": "authentication",
+  "name": "jwt-authentication-service",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Dead-simple JSON Web Token authentication service",
+  "homepage": "https://github.com/qkudev/jwt-authentication-service",
+  "private": false,
+  "repository": {
+    "url": "https://github.com/qkudev/jwt-authentication-service",
+    "type": "git"
+  },
+  "author": {
+    "name": "qkudev",
+    "email": "qkud.ev@gmail.com"
+  },
   "license": "MIT",
+  "keywords": [
+    "typescript",
+    "jwt",
+    "node",
+    "redis",
+    "auth"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\"",
